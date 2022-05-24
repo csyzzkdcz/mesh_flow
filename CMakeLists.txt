@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.0.0)
 
+# add_compile_options(-std=c++11)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
 project("mesh flow")
 
 # Maybe stop from CMAKEing in the wrong place
@@ -7,10 +10,19 @@ if (CMAKE_BINARY_DIR STREQUAL CMAKE_SOURCE_DIR)
     message(FATAL_ERROR "Source and build directories cannot be the same. Go use the /build directory.")
 endif()
 
+# build type 
+if(NOT CMAKE_BUILD_TYPE)
+	message(STATUS "No build type selected, default to Release")
+	set(CMAKE_BUILD_TYPE "Release")
+endif()
+
 ### Configure output locations
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+### cmake files
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 ### Compiler options
 set( CMAKE_EXPORT_COMPILE_COMMANDS 1 ) # Emit a compile flags file to support completion engines 
@@ -65,8 +77,8 @@ message("\n\n == CMAKE recursively building Polyscope\n")
 add_subdirectory("deps/polyscope")
 
 # Add libIGL
-find_package(LIBIGL REQUIRED)
-message("found libigl at ${LIBIGL_INCLUDE_DIR}")
+# find_package(LIBIGL REQUIRED)
+# message("found libigl at ${LIBIGL_INCLUDE_DIR}")
 
 message("\n\n == CMAKE recursively building libIGL\n")
 option(LIBIGL_WITH_ANTTWEAKBAR       "Use AntTweakBar"    OFF)
@@ -86,7 +98,7 @@ option(LIBIGL_WITH_TETGEN            "Use Tetgen"         ON)
 option(LIBIGL_WITH_TRIANGLE          "Use Triangle"       ON)
 option(LIBIGL_WITH_VIEWER            "Use OpenGL viewer"  ON)
 option(LIBIGL_WITH_XML               "Use XML"            OFF)
-#add_subdirectory("deps/libIGL")
+add_subdirectory("deps/libigl")
 
 # Create an executable
 add_executable(

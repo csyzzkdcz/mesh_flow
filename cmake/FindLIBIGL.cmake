@@ -3,6 +3,7 @@
 #
 #  LIBIGL_FOUND - system has LIBIGL
 #  LIBIGL_INCLUDE_DIR - **the** LIBIGL include directory
+message(${CMAKE_SOURCE_DIR})
 find_path(LIBIGL_INCLUDE_DIR igl/readOBJ.h
     PATHS
         ${CMAKE_SOURCE_DIR}/../..
