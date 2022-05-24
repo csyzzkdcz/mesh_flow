@@ -77,8 +77,8 @@ message("\n\n == CMAKE recursively building Polyscope\n")
 add_subdirectory("deps/polyscope")
 
 # Add libIGL
-# find_package(LIBIGL REQUIRED)
-# message("found libigl at ${LIBIGL_INCLUDE_DIR}")
+find_package(LIBIGL REQUIRED)
+message("found libigl at ${LIBIGL_INCLUDE_DIR}")
 
 message("\n\n == CMAKE recursively building libIGL\n")
 option(LIBIGL_WITH_ANTTWEAKBAR       "Use AntTweakBar"    OFF)
@@ -98,7 +98,7 @@ option(LIBIGL_WITH_TETGEN            "Use Tetgen"         ON)
 option(LIBIGL_WITH_TRIANGLE          "Use Triangle"       ON)
 option(LIBIGL_WITH_VIEWER            "Use OpenGL viewer"  ON)
 option(LIBIGL_WITH_XML               "Use XML"            OFF)
-add_subdirectory("deps/libigl")
+# add_subdirectory("deps/libigl")
 
 # Create an executable
 add_executable(
