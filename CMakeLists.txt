@@ -82,13 +82,13 @@ message("found libigl at ${LIBIGL_INCLUDE_DIR}")
 
 message("\n\n == CMAKE recursively building libIGL\n")
 option(LIBIGL_WITH_ANTTWEAKBAR       "Use AntTweakBar"    OFF)
-option(LIBIGL_WITH_CGAL              "Use CGAL"           ON)
+option(LIBIGL_WITH_CGAL              "Use CGAL"           OFF)
 option(LIBIGL_WITH_COMISO            "Use CoMiso"         ON)
 option(LIBIGL_WITH_CORK              "Use Cork"           OFF)
 option(LIBIGL_WITH_EMBREE            "Use Embree"         OFF)
 option(LIBIGL_WITH_LIM               "Use LIM"            OFF)
 option(LIBIGL_WITH_MATLAB            "Use Matlab"         OFF)
-option(LIBIGL_WITH_MOSEK             "Use MOSEK"          ON)
+option(LIBIGL_WITH_MOSEK             "Use MOSEK"          OFF)
 option(LIBIGL_WITH_OPENGL            "Use OpenGL"         ON)
 option(LIBIGL_WITH_OPENGL_GLFW       "Use GLFW"           ON)
 option(LIBIGL_WITH_OPENGL_GLFW_IMGUI "Use ImGui"          ON)
@@ -104,6 +104,8 @@ option(LIBIGL_WITH_XML               "Use XML"            OFF)
 add_executable(
         mesh-flow
         src/main.cpp
+        src/MeshFlowProcess.cpp
+        include/MeshFlowProcess.h
         )
 
 # Include settings
@@ -117,6 +119,4 @@ igl::core
 igl::opengl_glfw 
 igl::opengl_glfw_imgui 
 igl::comiso 
-igl::tetgen 
-igl::cgal 
-igl::mosek)
+igl::tetgen)

@@ -20,9 +20,6 @@
 #include <unordered_set>
 #include <utility>
 
-#include "args/args.hxx"
-#include "json/json.hpp"
-
 // The mesh, Eigen representation
 Eigen::MatrixXd meshV;
 Eigen::MatrixXi meshF;
@@ -128,25 +125,6 @@ void callback() {
 }
 
 int main(int argc, char **argv) {
-  // Configure the argument parser
-  args::ArgumentParser parser("A simple demo of Polyscope with libIGL.\nBy "
-                              "Nick Sharp (nsharp@cs.cmu.edu)",
-                              "");
-  args::Positional<std::string> inFile(parser, "mesh", "input mesh");
-
-  // Parse args
-  try {
-    parser.ParseCLI(argc, argv);
-  } catch (args::Help) {
-    std::cout << parser;
-    return 0;
-  } catch (args::ParseError e) {
-    std::cerr << e.what() << std::endl;
-
-    std::cerr << parser;
-    return 1;
-  }
-
   // Options
   polyscope::options::autocenterStructures = true;
   polyscope::view::windowWidth = 1024;
@@ -154,12 +132,21 @@ int main(int argc, char **argv) {
 
   // Initialize polyscope
   polyscope::init();
+  if(argc < 2)
+  {
+      std::cerr << "no enough inputs!" << std::endl;
+      exit(EXIT_FAILURE);
+  }
 
-  std::string filename = args::get(inFile);
+  std::string filename = argv[1];
   std::cout << "loading: " << filename << std::endl;
 
   // Read the mesh
-  igl::readOBJ(filename, meshV, meshF);
+  if (!igl::readOBJ(filename, meshV, meshF))
+  {
+      std::cerr << "missing the mesh file!" << std::endl;
+      exit(EXIT_FAILURE);
+  }
 
   // Register the mesh with Polyscope
   polyscope::registerSurfaceMesh("input mesh", meshV, meshF);
