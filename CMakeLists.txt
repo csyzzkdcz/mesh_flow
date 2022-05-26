@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.0.0)
 # add_compile_options(-std=c++11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-project("mesh flow")
+project("mesh-flow")
 
 # Maybe stop from CMAKEing in the wrong place
 if (CMAKE_BINARY_DIR STREQUAL CMAKE_SOURCE_DIR)
@@ -79,8 +79,6 @@ add_subdirectory("deps/polyscope")
 # Add libIGL
 find_package(LIBIGL REQUIRED)
 message("found libigl at ${LIBIGL_INCLUDE_DIR}")
-
-message("\n\n == CMAKE recursively building libIGL\n")
 option(LIBIGL_WITH_ANTTWEAKBAR       "Use AntTweakBar"    OFF)
 option(LIBIGL_WITH_CGAL              "Use CGAL"           OFF)
 option(LIBIGL_WITH_COMISO            "Use CoMiso"         ON)
@@ -100,19 +98,23 @@ option(LIBIGL_WITH_VIEWER            "Use OpenGL viewer"  ON)
 option(LIBIGL_WITH_XML               "Use XML"            OFF)
 # add_subdirectory("deps/libigl")
 
+file(GLOB SRCFILES  
+    src/*.cpp
+    *.cpp
+    include/*.h
+    include/*.hpp)
+
 # Create an executable
 add_executable(
-        mesh-flow
-        src/main.cpp
-        src/MeshFlowProcess.cpp
-        include/MeshFlowProcess.h
+        ${PROJECT_NAME}_bin
+        ${SRCFILES}
         )
 
 # Include settings
-target_include_directories(mesh-flow PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/deps/libigl/include")
+target_include_directories(${PROJECT_NAME}_bin PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/deps/libigl/include")
 
 # Link settings
-target_link_libraries(mesh-flow 
+target_link_libraries(${PROJECT_NAME}_bin 
 polyscope 
 igl::triangle 
 igl::core 
