@@ -74,14 +74,18 @@ endif()
 # use fetch content
 include(FetchContent)
 
-#polyscope
+# polyscope
 include(polyscope)
+
+# IPC-tookit
+include(ipc_toolkit)
 
 
 #libigl
 option(LIBIGL_GLFW                "Build target igl::glfw"                OFF)
 option(LIBIGL_IMGUI               "Build target igl::imgui"               OFF)
 option(LIBIGL_OPENGL              "Build target igl::opengl"              OFF)
+option(LIBIGL_PREDICATES          "Build target igl::predicates"          ON)
 option(LIBIGL_COPYLEFT_COMISO     "Build target igl_copyleft::comiso"     ON)
 option(LIBIGL_COPYLEFT_CORE       "Build target igl_copyleft::core"       ON)
 option(LIBIGL_COPYLEFT_TETGEN     "Build target igl_copyleft::tetgen"     ON)
@@ -104,8 +108,10 @@ add_executable(
 target_link_libraries(${PROJECT_NAME}_bin PUBLIC
 igl_restricted::triangle
 igl::core 
+igl::predicates
 igl_copyleft::comiso 
 igl_copyleft::tetgen
 polyscope 
+ipc::toolkit
 )
 
