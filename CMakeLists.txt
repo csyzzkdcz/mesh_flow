@@ -25,12 +25,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 ### Compiler options
-set( CMAKE_EXPORT_COMPILE_COMMANDS 1 ) # Emit a compile flags file to support completion engines 
-
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   # using Clang (linux or apple) or GCC
   message("Using clang/gcc compiler flags")
-  SET(BASE_CXX_FLAGS "-std=c++11 -Wall -Wextra -g3")
+  SET(BASE_CXX_FLAGS "-std=c++11")
   SET(DISABLED_WARNINGS " -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -Wno-deprecated-declarations -Wno-missing-braces")
   SET(TRACE_INCLUDES " -H -Wno-error=unused-command-line-argument")
 
@@ -49,7 +47,8 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STR
   #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TRACE_INCLUDES}") # uncomment if you need to track down where something is getting included from
   SET(CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_DEBUG} -g3")
   SET(CMAKE_CXX_FLAGS_MINSIZEREL     "-Os -DNDEBUG")
-  SET(CMAKE_CXX_FLAGS_RELEASE        "-mcpu=apple-m1 -O3 -DNDEBUG")
+  #SET(CMAKE_CXX_FLAGS_RELEASE        "-mcpu=apple-m1 -O3 -DNDEBUG") # uncomment if you use M1 cpu
+  SET(CMAKE_CXX_FLAGS_RELEASE        "-O3 -DNDEBUG")
   SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
   # using Visual Studio C++

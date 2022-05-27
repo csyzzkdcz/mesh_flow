@@ -1,6 +1,6 @@
 #include "../include/flow.h"
 
-#include <igl/signed_distance.h>
+// #include <igl/signed_distance.h>
 #include <igl/point_mesh_squared_distance.h>
 #include <igl/per_vertex_normals.h>
 #include <igl/per_edge_normals.h>
@@ -8,7 +8,9 @@
 #include <igl/normalize_row_lengths.h>
 #include <igl/massmatrix.h>
 #include <igl/invert_diag.h>
-#include <igl/winding_number.h>
+// #include <igl/winding_number.h>
+
+#include "../include/igl_signed_distance_wrapper.h"
 
 #include <iostream>
 
@@ -120,7 +122,7 @@ Eigen::VectorXd distance_direction(
 	MatrixXd C, N;
 	VectorXi I;
 	VectorXd S;
-	igl::signed_distance(P, V, F, igl::SIGNED_DISTANCE_TYPE_PSEUDONORMAL, S, I, C, N);
+    signed_distance(P, V, F, S, I, C, N);
 	MatrixXd dif = C - P;
 	VectorXd dis = S;
 
@@ -359,39 +361,39 @@ bool flow_fine_inside_coarse(
 	const Eigen::SparseMatrix<double>& A_qv,
 	std::stack<Eigen::MatrixXd>& H)
 {
-	using namespace Eigen;
-	using namespace std;
-	using namespace igl;
+// 	using namespace Eigen;
+// 	using namespace std;
+// 	using namespace igl;
 
-	// while there are intersections or some negative winding number, keep flowing
-	SparseMatrix<double> M;
-	massmatrix(V0, F0, MASSMATRIX_TYPE_BARYCENTRIC, M);	// barycentric average of face area
-	SparseMatrix<double> M_inv;
-	invert_diag(M, M_inv);
+// 	// while there are intersections or some negative winding number, keep flowing
+// 	SparseMatrix<double> M;
+// 	massmatrix(V0, F0, MASSMATRIX_TYPE_BARYCENTRIC, M);	// barycentric average of face area
+// 	SparseMatrix<double> M_inv;
+// 	invert_diag(M, M_inv);
 
-	MatrixXd V = V0;
-	H.push(V);
-	// calculate diameter of the meshes to scale step size
-	double diam = diameter(V0, V_coarse);
-	double delta_t = diam * 1e-3;
+// 	MatrixXd V = V0;
+// 	H.push(V);
+// 	// calculate diameter of the meshes to scale step size
+// 	double diam = diameter(V0, V_coarse);
+// 	double delta_t = diam * 1e-3;
 
-	VectorXd W(1); // winding number of the first point
-	winding_number(V_coarse, F_coarse, V.row(0), W);
+// 	VectorXd W(1); // winding number of the first point
+// 	winding_number(V_coarse, F_coarse, V.row(0), W);
 
-	int step = 1;
+// 	int step = 1;
 
-	while (W[0] < 1e-10) {
-#ifdef VERBOSE_DEBUG
-		cout << "Flow step " << step << ":Coarse and fine mesh intersect " << endl;
-#endif
-		flow_one_step(MatrixXd(V), F0, V_coarse, F_coarse, A_qv, M_inv, delta_t, V);
-		step = step + 1;
-		// **Alec: notice that we cannot pass V as input and output, instead wrap the 
-		// input inside MatrixXd to force compiler to make a copy in this case.
-		winding_number(V_coarse, F_coarse, V.row(0), W);
-		H.push(V);
-		// Quit after 1000 steps of the flow and return false
-		if (step > 1000) return false;
-	}
+// 	while (W[0] < 1e-10) {
+// #ifdef VERBOSE_DEBUG
+// 		cout << "Flow step " << step << ":Coarse and fine mesh intersect " << endl;
+// #endif
+// 		flow_one_step(MatrixXd(V), F0, V_coarse, F_coarse, A_qv, M_inv, delta_t, V);
+// 		step = step + 1;
+// 		// **Alec: notice that we cannot pass V as input and output, instead wrap the 
+// 		// input inside MatrixXd to force compiler to make a copy in this case.
+// 		winding_number(V_coarse, F_coarse, V.row(0), W);
+// 		H.push(V);
+// 		// Quit after 1000 steps of the flow and return false
+// 		if (step > 1000) return false;
+// 	}
 	return true;
 }

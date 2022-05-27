@@ -1,5 +1,4 @@
 #include <iostream>
-#include <igl/signed_distance.h>
 #include <igl/point_mesh_squared_distance.h>
 #include <igl/per_vertex_normals.h>
 #include <igl/per_edge_normals.h>
