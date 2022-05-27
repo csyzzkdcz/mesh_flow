@@ -85,7 +85,7 @@ option(LIBIGL_COPYLEFT_TETGEN     "Build target igl_copyleft::tetgen"     ON)
 option(LIBIGL_RESTRICTED_TRIANGLE "Build target igl_restricted::triangle" ON)
 
 list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-include(libigl)
+add_subdirectory(deps/libigl)
 
 file(GLOB SRCFILES  
     src/*.cpp
