@@ -1,8 +1,4 @@
 cmake_minimum_required(VERSION 3.16.0)
-
-# add_compile_options(-std=c++11)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-
 project("mesh-flow")
 
 # Maybe stop from CMAKEing in the wrong place
@@ -77,9 +73,6 @@ include(FetchContent)
 # polyscope
 include(polyscope)
 
-# IPC-tookit
-include(ipc_toolkit)
-
 
 #libigl
 option(LIBIGL_GLFW                "Build target igl::glfw"                OFF)
@@ -91,6 +84,9 @@ option(LIBIGL_COPYLEFT_CORE       "Build target igl_copyleft::core"       ON)
 option(LIBIGL_COPYLEFT_TETGEN     "Build target igl_copyleft::tetgen"     ON)
 option(LIBIGL_RESTRICTED_TRIANGLE "Build target igl_restricted::triangle" ON)
 include(libigl)
+
+# IPC-tookit
+include(ipc_toolkit)
 
 file(GLOB SRCFILES  
     src/*.cpp
