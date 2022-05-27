@@ -71,11 +71,14 @@ else()
   message( FATAL_ERROR "Unrecognized compiler [${CMAKE_CXX_COMPILER_ID}]" )
 endif()
 
-# Add polyscope
-message("\n\n == CMAKE recursively building Polyscope\n")
-add_subdirectory("deps/polyscope")
+# use fetch content
+include(FetchContent)
 
-# Add libIGL
+#polyscope
+include(polyscope)
+
+
+#libigl
 option(LIBIGL_GLFW                "Build target igl::glfw"                OFF)
 option(LIBIGL_IMGUI               "Build target igl::imgui"               OFF)
 option(LIBIGL_OPENGL              "Build target igl::opengl"              OFF)
@@ -83,9 +86,7 @@ option(LIBIGL_COPYLEFT_COMISO     "Build target igl_copyleft::comiso"     ON)
 option(LIBIGL_COPYLEFT_CORE       "Build target igl_copyleft::core"       ON)
 option(LIBIGL_COPYLEFT_TETGEN     "Build target igl_copyleft::tetgen"     ON)
 option(LIBIGL_RESTRICTED_TRIANGLE "Build target igl_restricted::triangle" ON)
-
-list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-add_subdirectory(deps/libigl)
+include(libigl)
 
 file(GLOB SRCFILES  
     src/*.cpp
@@ -99,17 +100,12 @@ add_executable(
         ${SRCFILES}
         )
 
-# Include settings
-target_include_directories(${PROJECT_NAME}_bin PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/deps/libigl/include")
-
 # Link settings
 target_link_libraries(${PROJECT_NAME}_bin PUBLIC
-polyscope 
 igl_restricted::triangle
 igl::core 
-# igl::opengl_glfw 
-# igl::opengl_glfw_imgui 
 igl_copyleft::comiso 
 igl_copyleft::tetgen
+polyscope 
 )
 

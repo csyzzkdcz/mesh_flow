@@ -1,19 +1,9 @@
 #include "polyscope/polyscope.h"
 
-#include <igl/PI.h>
-#include <igl/avg_edge_length.h>
-#include <igl/barycenter.h>
-#include <igl/boundary_loop.h>
 #include <igl/exact_geodesic.h>
-#include <igl/gaussian_curvature.h>
-#include <igl/invert_diag.h>
-#include <igl/lscm.h>
-#include <igl/massmatrix.h>
-#include <igl/per_vertex_normals.h>
 #include <igl/readOBJ.h>
 
 #include "polyscope/messages.h"
-#include "polyscope/point_cloud.h"
 #include "polyscope/surface_mesh.h"
 
 #include <iostream>
@@ -33,7 +23,7 @@ std::vector<Eigen::MatrixXd> isoFlow;
 
 meshflow::MeshFlowProcess meshFlow;
 double energyTol = 1e-8;
-int numIter = 100;
+int numIter = 20;
 double dt = 1e-3;
 double dhat = 1e-2;
 int quadOrd = 2;
@@ -122,6 +112,17 @@ void callback()
 		}
 		updateView(curFrame);
 	}
+
+    if (ImGui::Button("output images", ImVec2(-1, 0)))
+    {
+        for (int i = 0; i < isoFlow.size(); i++)
+        {
+            updateView(i);
+            //polyscope::options::screenshotExtension = ".jpg";
+            std::string name = "output_" + std::to_string(i) + ".jpg";
+            polyscope::screenshot(name);
+        }
+    }
 
 	ImGui::PopItemWidth();
 }
