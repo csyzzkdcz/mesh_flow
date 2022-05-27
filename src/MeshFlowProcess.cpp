@@ -6,6 +6,7 @@
 #include <igl/normalize_row_lengths.h>
 #include <igl/massmatrix.h>
 #include <igl/invert_diag.h>
+#include <igl/doublearea.h>
 #include "../include/flow.h"
 #include "../include/MeshFlowProcess.h"
 

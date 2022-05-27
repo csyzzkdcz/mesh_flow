@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.16.0)
 
 # add_compile_options(-std=c++11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
@@ -76,25 +76,16 @@ message("\n\n == CMAKE recursively building Polyscope\n")
 add_subdirectory("deps/polyscope")
 
 # Add libIGL
-message("found libigl at ${LIBIGL_INCLUDE_DIR}")
-option(LIBIGL_WITH_ANTTWEAKBAR       "Use AntTweakBar"    OFF)
-option(LIBIGL_WITH_CGAL              "Use CGAL"           OFF)
-option(LIBIGL_WITH_COMISO            "Use CoMiso"         ON)
-option(LIBIGL_WITH_CORK              "Use Cork"           OFF)
-option(LIBIGL_WITH_EMBREE            "Use Embree"         OFF)
-option(LIBIGL_WITH_LIM               "Use LIM"            OFF)
-option(LIBIGL_WITH_MATLAB            "Use Matlab"         OFF)
-option(LIBIGL_WITH_MOSEK             "Use MOSEK"          OFF)
-option(LIBIGL_WITH_OPENGL            "Use OpenGL"         ON)
-option(LIBIGL_WITH_OPENGL_GLFW       "Use GLFW"           ON)
-option(LIBIGL_WITH_OPENGL_GLFW_IMGUI "Use ImGui"          ON)
-option(LIBIGL_WITH_PNG               "Use PNG"            OFF)
-option(LIBIGL_WITH_PYTHON            "Use Python"         OFF)
-option(LIBIGL_WITH_TETGEN            "Use Tetgen"         ON)
-option(LIBIGL_WITH_TRIANGLE          "Use Triangle"       ON)
-option(LIBIGL_WITH_VIEWER            "Use OpenGL viewer"  ON)
-option(LIBIGL_WITH_XML               "Use XML"            OFF)
-find_package(LIBIGL REQUIRED)
+option(LIBIGL_GLFW                "Build target igl::glfw"                OFF)
+option(LIBIGL_IMGUI               "Build target igl::imgui"               OFF)
+option(LIBIGL_OPENGL              "Build target igl::opengl"              OFF)
+option(LIBIGL_COPYLEFT_COMISO     "Build target igl_copyleft::comiso"     ON)
+option(LIBIGL_COPYLEFT_CORE       "Build target igl_copyleft::core"       ON)
+option(LIBIGL_COPYLEFT_TETGEN     "Build target igl_copyleft::tetgen"     ON)
+option(LIBIGL_RESTRICTED_TRIANGLE "Build target igl_restricted::triangle" ON)
+
+list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+add_subdirectory(deps/libigl)
 
 file(GLOB SRCFILES  
     src/*.cpp
@@ -112,11 +103,13 @@ add_executable(
 target_include_directories(${PROJECT_NAME}_bin PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/deps/libigl/include")
 
 # Link settings
-target_link_libraries(${PROJECT_NAME}_bin 
+target_link_libraries(${PROJECT_NAME}_bin PUBLIC
 polyscope 
-igl::triangle 
+igl_restricted::triangle
 igl::core 
-igl::opengl_glfw 
-igl::opengl_glfw_imgui 
-igl::comiso 
-igl::tetgen)
+# igl::opengl_glfw 
+# igl::opengl_glfw_imgui 
+igl_copyleft::comiso 
+igl_copyleft::tetgen
+)
+
