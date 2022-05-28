@@ -7,6 +7,11 @@
 #include <igl/massmatrix.h>
 #include <igl/invert_diag.h>
 #include <igl/doublearea.h>
+#include <igl/edges.h>
+
+#include <ipc/ipc.hpp>
+#include <ipc/collision_mesh.hpp>
+
 #include "../include/flow.h"
 #include "../include/MeshFlowProcess.h"
 
@@ -42,11 +47,41 @@ bool meshflow::MeshFlowProcess::isoSurfaceFlow(const Eigen::MatrixXd& isoPos, co
 	int step = 1;
 	double energy = grad_energy(V, isoFaces, _refPos, _refFaces, A_qv, NULL);
 	std::cout << "initial energy: " << energy << std::endl;
+    
+    Eigen::MatrixXi E;
+    igl::edges(isoFaces, E);
+    
+    ipc::CollisionMesh mesh(V, E, isoFaces);
 
-	while (energy > energyTol) {
-		cout << "Flow step " << step << ": " << energy << endl;
+    ipc::Constraints constraint_set;
+    ipc::construct_constraint_set(mesh, V, dhat, constraint_set);
+    
+    
+    double ipcEnergy = ipc::compute_barrier_potential(mesh, V, constraint_set, dhat);
+    
+    std::cout << "initial ipc energy: " << ipcEnergy << std::endl;
+
+	while (energy > energyTol)
+    {
 		Eigen::MatrixXd grad;
 		energy = grad_energy(V, isoFaces, _refPos, _refFaces, A_qv, &grad);
+        
+        ipc::construct_constraint_set(mesh, V, dhat, constraint_set);
+        ipcEnergy = ipc::compute_barrier_potential(mesh, V, constraint_set, dhat);
+        Eigen::VectorXd grad_b = ipc::compute_barrier_potential_gradient(
+                    mesh, V, constraint_set, dhat);
+        
+        cout << "Flow step " << step << ": \nflow energy: " << energy << ", ipc energy: " << ipcEnergy << endl;
+        cout << "flow grad: " << grad.norm() << ", ipc grad: " << grad_b.norm() << std::endl;
+        if(isinf(grad_b.norm()))
+            break;
+        
+        Eigen::MatrixXd unflattend_grad_b = V;
+        for(int i = 0; i < V.rows(); i++)
+        {
+            unflattend_grad_b.row(i) = grad_b.segment<3>(3 * i);
+        }
+        grad += unflattend_grad_b;
 		
 		V = V - delta_t * M_inv * grad;
 

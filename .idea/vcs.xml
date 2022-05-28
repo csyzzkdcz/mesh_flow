@@ -2,6 +2,20 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build_Xcode/_deps/comiso-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build_Xcode/_deps/eigen-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build_Xcode/_deps/ipc-toolkit-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build_Xcode/_deps/libigl-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build_Xcode/_deps/polyscope-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build_Xcode/_deps/polyscope-src/deps/glfw" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build_Xcode/_deps/polyscope-src/deps/happly" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build_Xcode/_deps/polyscope-src/deps/imgui/imgui" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build_Xcode/_deps/predicates-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build_Xcode/_deps/sweep_and_tiniest_queue-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build_Xcode/_deps/tbb-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build_Xcode/_deps/tetgen-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build_Xcode/_deps/tight_inclusion-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/build_Xcode/_deps/triangle-src" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/deps/libigl" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/deps/polyscope" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/deps/polyscope/deps/glfw" vcs="Git" />
