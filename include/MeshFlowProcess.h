@@ -23,6 +23,23 @@ namespace meshflow
 		* @paramOut[isoFlow]:	the vector of iso surface flow, which should satisfy the following properties: (1) it is as close as possible to the reference surface, (2) there is not self-intersection.
 		* @return:				true: if the process terminated within the energyTol, false: reach the maximum iterations
 		*/
+        
+        // just for viauslization. TODO: remove this
+        bool isoSurfaceFlowFullReturn(const Eigen::MatrixXd& isoPos, const Eigen::MatrixXi& isoFaces, std::vector<Eigen::MatrixXd>& isoFlow, const int numIter, const double energyTol, const double dhat, double dt = 1e-3, int quadOrd = 2, std::vector<Eigen::MatrixXd> *flowGrad = NULL, std::vector<Eigen::MatrixXd> *ipcGrad = NULL);
+        /*  try to shrink the isosuface, and make sure it close to the reference mesh
+        * @paramIn[isoPos]:        the initial vertices postion of the iso surface
+        * @paramIn[isoFaces]:    the initial faces of the iso surface
+        * @paramIn[numIter]:    the num of iterations for termination
+        * @paramIn[energyTol]:    the energy tolenrance of the termination
+        * @paramIn[dhat]:        the IPC tolerance, which is used to control the log barrier sharpness, in our case, the minimum distance between edge-edge. point-edge, point-face. (See IPC paper for details)
+        * @paramIn[dt]:            the flowing time step size.
+        * @paramIn[quadOrd]:    the order of quadarature points using to approximate the integration, see "Nasted Cage" paper for details
+        *
+        * @paramOut[isoFlow]:    the vector of iso surface flow, which should satisfy the following properties: (1) it is as close as possible to the reference surface, (2) there is not self-intersection.
+        * @paramOut[flowGrad]:   the flow gradient list pointer
+        * @paramOut[ipcGrad]:    the ipc gradeint list pointer
+        * @return:                true: if the process terminated within the energyTol, false: reach the maximum iterations
+        */
 		
 
 	private:

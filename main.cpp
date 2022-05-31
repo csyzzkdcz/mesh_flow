@@ -20,6 +20,10 @@ Eigen::MatrixXd isoV;
 Eigen::MatrixXi isoF;
 
 std::vector<Eigen::MatrixXd> isoFlow;
+std::vector<Eigen::MatrixXd> flowGrads;
+std::vector<Eigen::MatrixXd> ipcGrads;
+std::vector<Eigen::VectorXd> flowGradNorms;
+std::vector<Eigen::VectorXd> ipcGradNorms;
 
 meshflow::MeshFlowProcess meshFlow;
 double energyTol = 1e-8;
@@ -30,16 +34,44 @@ int quadOrd = 2;
 int curFrame = 0;
 
 bool isShowIsoSurface = true;
-bool isShowRefSurface = true;
+bool isShowRefSurface = false;
+
+double globalMinFlow = 0;
+double globalMaxFlow = 0;
+
+double globalMinIPC = 0;
+double globalMaxIPC = 0;
+
+double vecRatio = 0.01;
+bool isRun = false;
 
 void updateView(int frameId)
 {
 	polyscope::registerSurfaceMesh("reference mesh", refV, refF);
 	polyscope::getSurfaceMesh("reference mesh")->setEnabled(isShowRefSurface);
 
-	polyscope::registerSurfaceMesh("iso mesh", isoFlow[frameId], isoF);
-	polyscope::getSurfaceMesh("iso mesh")->setEnabled(isShowIsoSurface);
-
+	auto isoMesh = polyscope::registerSurfaceMesh("iso mesh", isoFlow[frameId], isoF);
+    isoMesh->setEnabled(isShowIsoSurface);
+    
+    if(isRun)
+    {
+        std::cout << "ipc force norm: " << std::endl;
+        auto ipcGradNormVis = isoMesh->addVertexScalarQuantity("ipc force norm", ipcGradNorms[frameId]);
+        ipcGradNormVis->setMapRange({globalMinIPC, globalMaxIPC});
+        ipcGradNormVis->setColorMap("coolwarm");
+        
+        std::cout << "flow force norm: " << std::endl;
+        auto flowGradNormVis = isoMesh->addVertexScalarQuantity("flow force norm", flowGradNorms[frameId]);
+        flowGradNormVis->setMapRange({globalMinFlow, globalMaxFlow});
+        flowGradNormVis->setColorMap("coolwarm");
+        
+        std::cout << "ipc force: " << std::endl;
+        isoMesh->addVertexVectorQuantity("ipc force", -vecRatio * ipcGrads[frameId], polyscope::VectorType::AMBIENT);
+        std::cout << "flow force: " << std::endl;
+        isoMesh->addVertexVectorQuantity("flow force", -vecRatio * flowGradNorms[frameId], polyscope::VectorType::AMBIENT);
+    }
+    
+    
 }
 
 void callback() 
@@ -94,6 +126,13 @@ void callback()
 			curFrame = curFrame % numIter;
 			updateView(curFrame);
 		}
+        
+        if(ImGui::InputDouble("vec ratio", &vecRatio))
+        {
+            if(vecRatio < 0)
+                vecRatio = 0;
+            updateView(curFrame);
+        }
 	}
 
 
@@ -101,15 +140,41 @@ void callback()
 	if (ImGui::Button("Iso Flow"))
 	{
 		meshFlow = meshflow::MeshFlowProcess(refV, refF);
-		meshFlow.isoSurfaceFlow(isoV, isoF, isoFlow, numIter, energyTol, dhat, dt, quadOrd);
+		meshFlow.isoSurfaceFlowFullReturn(isoV, isoF, isoFlow, numIter, energyTol, dhat, dt, quadOrd, &flowGrads, &ipcGrads);
 		if (isoFlow.size() < numIter)	// this is just for the visualization convenience
 		{
 			Eigen::MatrixXd finalIso = isoFlow[isoFlow.size() - 1];
+            Eigen::MatrixXd finalFlowGrad = flowGrads[isoFlow.size() - 1];
+            Eigen::MatrixXd finalIPCGrad = ipcGrads[isoFlow.size() - 1];
+            
 			for (int i = isoFlow.size(); i < numIter; i++)
 			{
 				isoFlow.push_back(finalIso);
+                flowGrads.push_back(finalFlowGrad);
+                ipcGrads.push_back(finalIPCGrad);
 			}
 		}
+        ipcGradNorms.resize(numIter);
+        flowGradNorms.resize(numIter);
+        
+     
+        
+        for(int i = 0; i < numIter; i++)
+        {
+            flowGradNorms[i].resize(flowGrads[i].rows());
+            ipcGradNorms[i].resize(ipcGrads[i].rows());
+            for(int j = 0; j < flowGrads[i].rows(); j++)
+            {
+                flowGradNorms[i][j] = flowGrads[i].row(j).norm();
+                globalMinFlow = std::min(globalMinFlow, flowGradNorms[i][j]);
+                globalMaxFlow = std::max(globalMaxFlow, flowGradNorms[i][j]);
+                
+                ipcGradNorms[i][j] = ipcGrads[i].row(j).norm();
+                globalMinIPC = std::min(globalMinIPC, ipcGradNorms[i][j]);
+                globalMaxIPC = std::max(globalMaxIPC, ipcGradNorms[i][j]);
+            }
+        }
+        isRun = true;
 		updateView(curFrame);
 	}
 
@@ -168,6 +233,8 @@ int main(int argc, char** argv) {
 
 	curFrame = 0;
 	isoFlow.resize(numIter, isoV);
+    
+    isRun = false;
 
 	// Register the mesh with Polyscope
 	updateView(curFrame);
