@@ -65,11 +65,11 @@ else()
   message( FATAL_ERROR "Unrecognized compiler [${CMAKE_CXX_COMPILER_ID}]" )
 endif()
 
-# use fetch content
-include(FetchContent)
-
 # polyscope
 include(polyscope)
+
+# finite diff
+include(finite_diff)
 
 
 #libigl
@@ -107,5 +107,6 @@ igl_copyleft::comiso
 igl_copyleft::tetgen
 polyscope 
 ipc::toolkit
+finitediff::finitediff
 )
 

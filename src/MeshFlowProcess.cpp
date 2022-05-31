@@ -9,6 +9,7 @@
 #include <igl/doublearea.h>
 #include <igl/edges.h>
 
+#include <finitediff.hpp>
 #include <ipc/ipc.hpp>
 #include <ipc/collision_mesh.hpp>
 
@@ -65,7 +66,6 @@ bool meshflow::MeshFlowProcess::isoSurfaceFlow(const Eigen::MatrixXd& isoPos, co
     {
 		Eigen::MatrixXd grad;
 		energy = grad_energy(V, isoFaces, _refPos, _refFaces, A_qv, &grad);
-        
         ipc::construct_constraint_set(mesh, V, dhat, constraint_set);
         ipcEnergy = ipc::compute_barrier_potential(mesh, V, constraint_set, dhat);
         Eigen::VectorXd grad_b = ipc::compute_barrier_potential_gradient(
@@ -73,17 +73,20 @@ bool meshflow::MeshFlowProcess::isoSurfaceFlow(const Eigen::MatrixXd& isoPos, co
         
         cout << "Flow step " << step << ": \nflow energy: " << energy << ", ipc energy: " << ipcEnergy << endl;
         cout << "flow grad: " << grad.norm() << ", ipc grad: " << grad_b.norm() << std::endl;
+//        Eigen::SparseMatrix<double> hess_b = ipc::compute_barrier_potential_hessian(mesh, V, constraint_set, dhat);
+        
         if(isinf(grad_b.norm()))
             break;
         
-        Eigen::MatrixXd unflattend_grad_b = V;
-        for(int i = 0; i < V.rows(); i++)
-        {
-            unflattend_grad_b.row(i) = grad_b.segment<3>(3 * i);
-        }
+        Eigen::MatrixXd unflattend_grad_b = fd::unflatten(grad_b, V.cols());
         grad += unflattend_grad_b;
+        Eigen::MatrixXd V1 = V - M_inv * grad;
+        double maxStep = ipc::compute_collision_free_stepsize(mesh, V, V1);
+        
+        std::cout << "max step size: " << maxStep << std::endl;
+    
 		
-		V = V - delta_t * M_inv * grad;
+		V = V - maxStep * M_inv * grad;
 
 		step = step + 1;
 		isoFlow.push_back(V);
