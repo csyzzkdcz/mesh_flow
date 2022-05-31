@@ -10,13 +10,14 @@ namespace meshflow
 		MeshFlowProcess() {}
 		MeshFlowProcess(const Eigen::MatrixXd& refPos, const Eigen::MatrixXi& refFaces) : _refPos(refPos), _refFaces(refFaces) {}
 
-		bool isoSurfaceFlow(const Eigen::MatrixXd& isoPos, const Eigen::MatrixXi& isoFaces, std::vector<Eigen::MatrixXd>& isoFlow, const int numIter, const double energyTol, const double dhat, double dt = 1e-3, int quadOrd = 2);
+		bool isoSurfaceFlow(const Eigen::MatrixXd& isoPos, const Eigen::MatrixXi& isoFaces, std::vector<Eigen::MatrixXd>& isoFlow, const int numIter, const double energyTol, const double dhat = 1e-4, double ipcCoeff = 1e3, double dt = 1e-3, int quadOrd = 2);
 		/*  try to shrink the isosuface, and make sure it close to the reference mesh
 		* @paramIn[isoPos]:		the initial vertices postion of the iso surface 
 		* @paramIn[isoFaces]:	the initial faces of the iso surface
 		* @paramIn[numIter]:	the num of iterations for termination
 		* @paramIn[energyTol]:	the energy tolenrance of the termination
 		* @paramIn[dhat]:		the IPC tolerance, which is used to control the log barrier sharpness, in our case, the minimum distance between edge-edge. point-edge, point-face. (See IPC paper for details)
+		* @paramIn[ipcCoeff]:	the IPC coefficient.
 		* @paramIn[dt]:			the flowing time step size. 
 		* @paramIn[quadOrd]:	the order of quadarature points using to approximate the integration, see "Nasted Cage" paper for details
 		* 
@@ -25,13 +26,14 @@ namespace meshflow
 		*/
         
         // just for viauslization. TODO: remove this
-        bool isoSurfaceFlowFullReturn(const Eigen::MatrixXd& isoPos, const Eigen::MatrixXi& isoFaces, std::vector<Eigen::MatrixXd>& isoFlow, const int numIter, const double energyTol, const double dhat, double dt = 1e-3, int quadOrd = 2, std::vector<Eigen::MatrixXd> *flowGrad = NULL, std::vector<Eigen::MatrixXd> *ipcGrad = NULL);
+        bool isoSurfaceFlowFullReturn(const Eigen::MatrixXd& isoPos, const Eigen::MatrixXi& isoFaces, std::vector<Eigen::MatrixXd>& isoFlow, const int numIter, const double energyTol, const double dhat = 1e-4, double ipcCoeff = 1e3, double dt = 1e-3, int quadOrd = 2, std::vector<Eigen::MatrixXd> *flowGrad = NULL, std::vector<Eigen::MatrixXd> *ipcGrad = NULL);
         /*  try to shrink the isosuface, and make sure it close to the reference mesh
         * @paramIn[isoPos]:        the initial vertices postion of the iso surface
         * @paramIn[isoFaces]:    the initial faces of the iso surface
         * @paramIn[numIter]:    the num of iterations for termination
         * @paramIn[energyTol]:    the energy tolenrance of the termination
         * @paramIn[dhat]:        the IPC tolerance, which is used to control the log barrier sharpness, in our case, the minimum distance between edge-edge. point-edge, point-face. (See IPC paper for details)
+		* @paramIn[ipcCoeff]:	the IPC coefficient.
         * @paramIn[dt]:            the flowing time step size.
         * @paramIn[quadOrd]:    the order of quadarature points using to approximate the integration, see "Nasted Cage" paper for details
         *

@@ -30,6 +30,7 @@ double energyTol = 1e-8;
 int numIter = 20;
 double dt = 1e-3;
 double dhat = 1e-2;
+double ipcCoeff = 1e3;
 int quadOrd = 2;
 int curFrame = 0;
 
@@ -94,6 +95,11 @@ void callback()
 			if (dhat < 0)
 				dhat = 1e-2;
 		}
+		if (ImGui::InputDouble("IPC stiffness", &ipcCoeff))
+		{
+			if (ipcCoeff < 0)
+				ipcCoeff = 1e3;
+		}
 		if (ImGui::InputDouble("step size", &dt))
 		{
 			if (dt < 0)
@@ -140,7 +146,7 @@ void callback()
 	if (ImGui::Button("Iso Flow"))
 	{
 		meshFlow = meshflow::MeshFlowProcess(refV, refF);
-		meshFlow.isoSurfaceFlowFullReturn(isoV, isoF, isoFlow, numIter, energyTol, dhat, dt, quadOrd, &flowGrads, &ipcGrads);
+		meshFlow.isoSurfaceFlowFullReturn(isoV, isoF, isoFlow, numIter, energyTol, dhat, ipcCoeff, dt, quadOrd, &flowGrads, &ipcGrads);
 		if (isoFlow.size() < numIter)	// this is just for the visualization convenience
 		{
 			Eigen::MatrixXd finalIso = isoFlow[isoFlow.size() - 1];

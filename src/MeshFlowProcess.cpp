@@ -16,7 +16,7 @@
 #include "../include/flow.h"
 #include "../include/MeshFlowProcess.h"
 
-bool meshflow::MeshFlowProcess::isoSurfaceFlow(const Eigen::MatrixXd& isoPos, const Eigen::MatrixXi& isoFaces, std::vector<Eigen::MatrixXd>& isoFlow, const int numIter, const double energyTol, const double dhat, double dt, int quadOrd)
+bool meshflow::MeshFlowProcess::isoSurfaceFlow(const Eigen::MatrixXd& isoPos, const Eigen::MatrixXi& isoFaces, std::vector<Eigen::MatrixXd>& isoFlow, const int numIter, const double energyTol, const double dhat, double ipcCoeff, double dt, int quadOrd)
 {
 
 	using namespace Eigen;
@@ -58,7 +58,7 @@ bool meshflow::MeshFlowProcess::isoSurfaceFlow(const Eigen::MatrixXd& isoPos, co
     ipc::construct_constraint_set(mesh, V, dhat, constraint_set);
     
     
-    double ipcEnergy = ipc::compute_barrier_potential(mesh, V, constraint_set, dhat);
+    double ipcEnergy = ipcCoeff * ipc::compute_barrier_potential(mesh, V, constraint_set, dhat);
     
     cout << "initial ipc energy: " << ipcEnergy << endl;
 
@@ -67,8 +67,8 @@ bool meshflow::MeshFlowProcess::isoSurfaceFlow(const Eigen::MatrixXd& isoPos, co
 		MatrixXd grad;
 		energy = grad_energy(V, isoFaces, _refPos, _refFaces, A_qv, &grad);
         ipc::construct_constraint_set(mesh, V, dhat, constraint_set);
-        ipcEnergy = ipc::compute_barrier_potential(mesh, V, constraint_set, dhat);
-        VectorXd grad_b = ipc::compute_barrier_potential_gradient(
+        ipcEnergy = ipcCoeff * ipc::compute_barrier_potential(mesh, V, constraint_set, dhat);
+        VectorXd grad_b = ipcCoeff * ipc::compute_barrier_potential_gradient(
                     mesh, V, constraint_set, dhat);
         
         cout << "Flow step " << step << ": \nflow energy: " << energy << ", ipc energy: " << ipcEnergy << endl;
@@ -96,7 +96,7 @@ bool meshflow::MeshFlowProcess::isoSurfaceFlow(const Eigen::MatrixXd& isoPos, co
 	return true;
 }
 
-bool meshflow::MeshFlowProcess::isoSurfaceFlowFullReturn(const Eigen::MatrixXd& isoPos, const Eigen::MatrixXi& isoFaces, std::vector<Eigen::MatrixXd>& isoFlow, const int numIter, const double energyTol, const double dhat, double dt, int quadOrd, std::vector<Eigen::MatrixXd> *flowGrad, std::vector<Eigen::MatrixXd> *ipcGrad)
+bool meshflow::MeshFlowProcess::isoSurfaceFlowFullReturn(const Eigen::MatrixXd& isoPos, const Eigen::MatrixXi& isoFaces, std::vector<Eigen::MatrixXd>& isoFlow, const int numIter, const double energyTol, const double dhat, double ipcCoeff, double dt, int quadOrd, std::vector<Eigen::MatrixXd> *flowGrad, std::vector<Eigen::MatrixXd> *ipcGrad)
 {
 
     using namespace Eigen;
@@ -140,9 +140,10 @@ bool meshflow::MeshFlowProcess::isoSurfaceFlowFullReturn(const Eigen::MatrixXd& 
     ipc::Constraints constraint_set;
     ipc::construct_constraint_set(mesh, V, dhat, constraint_set);
     
-    double ipcEnergy = ipc::compute_barrier_potential(mesh, V, constraint_set, dhat);
+    double ipcEnergy = ipcCoeff * ipc::compute_barrier_potential(mesh, V, constraint_set, dhat);
     
     cout << "initial ipc energy: " << ipcEnergy << endl;
+   
 
     while (energy > energyTol)
     {
@@ -150,11 +151,12 @@ bool meshflow::MeshFlowProcess::isoSurfaceFlowFullReturn(const Eigen::MatrixXd& 
         energy = grad_energy(V, isoFaces, _refPos, _refFaces, A_qv, &grad);
         ipc::construct_constraint_set(mesh, V, dhat, constraint_set);
         ipcEnergy = ipc::compute_barrier_potential(mesh, V, constraint_set, dhat);
-        VectorXd grad_b = ipc::compute_barrier_potential_gradient(
+        VectorXd grad_b = ipcCoeff * ipc::compute_barrier_potential_gradient(
                     mesh, V, constraint_set, dhat);
         
         cout << "Flow step " << step << ": \nflow energy: " << energy << ", ipc energy: " << ipcEnergy << endl;
         cout << "flow grad: " << grad.norm() << ", ipc grad: " << grad_b.norm() << endl;
+        cout << "check grad size: " << grad.rows() << " " << grad.cols() << " " << grad_b.size() << endl;
         
 //        SparseMatrix<double> hess_b = ipc::compute_barrier_potential_hessian(mesh, V, constraint_set, dhat);
         
