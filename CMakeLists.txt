@@ -66,13 +66,11 @@ else()
 endif()
 
 # polyscope
+message("build with polyscope")
 include(polyscope)
 
-# finite diff
-include(finite_diff)
-
-
 #libigl
+message("build with libigl")
 option(LIBIGL_GLFW                "Build target igl::glfw"                OFF)
 option(LIBIGL_IMGUI               "Build target igl::imgui"               OFF)
 option(LIBIGL_OPENGL              "Build target igl::opengl"              OFF)
@@ -80,11 +78,21 @@ option(LIBIGL_PREDICATES          "Build target igl::predicates"          ON)
 option(LIBIGL_COPYLEFT_COMISO     "Build target igl_copyleft::comiso"     ON)
 option(LIBIGL_COPYLEFT_CORE       "Build target igl_copyleft::core"       ON)
 option(LIBIGL_COPYLEFT_TETGEN     "Build target igl_copyleft::tetgen"     ON)
+option(LIBIGL_COPYLEFT_CGAL       "Build target igl_copyleft::cgal"       ON)
 option(LIBIGL_RESTRICTED_TRIANGLE "Build target igl_restricted::triangle" ON)
 include(libigl)
 
+# finite diff
+message("build with finite_diff")
+include(finite_diff)
+
 # IPC-tookit
+message("build with IPC-toolkit")
 include(ipc_toolkit)
+
+# tbb
+message("build with TBB")
+include(tbb)
 
 file(GLOB SRCFILES  
     src/*.cpp
@@ -105,8 +113,10 @@ igl::core
 igl::predicates
 igl_copyleft::comiso 
 igl_copyleft::tetgen
+igl_copyleft::cgal
 polyscope 
 ipc::toolkit
 finitediff::finitediff
+TBB::tbb
 )
 

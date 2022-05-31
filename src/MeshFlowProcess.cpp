@@ -9,9 +9,19 @@
 #include <igl/doublearea.h>
 #include <igl/edges.h>
 
+
 #include <finitediff.hpp>
 #include <ipc/ipc.hpp>
 #include <ipc/collision_mesh.hpp>
+#include <cgal/Exact_predicates_exact_constructions_kernel.h>
+#include <cgal/Exact_predicates_inexact_constructions_kernel.h>
+#include <cgal/Boolean_set_operations_2.h>
+#include <cgal/Polygon_set_2.h>
+#include <cgal/Polygon_2_algorithms.h>
+#include <cgal/Constrained_Delaunay_triangulation_2.h>
+#include <cgal/Triangulation_face_base_with_info_2.h>
+#include <cgal/intersections.h>
+#include <cgal/Polyline_simplification_2/simplify.h>
 
 #include "../include/flow.h"
 #include "../include/MeshFlowProcess.h"
